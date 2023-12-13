@@ -1,0 +1,44 @@
+<mxfile host="65bd71144e">
+    <diagram id="Z6Zl731hEpYsmYyRKsTD" name="Application Architecture">
+        <mxGraphModel dx="1074" dy="521" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="FGZHOIzdyHBwlUi2fdTw-0"/>
+                <mxCell id="FGZHOIzdyHBwlUi2fdTw-1" parent="FGZHOIzdyHBwlUi2fdTw-0"/>
+                <mxCell id="FGZHOIzdyHBwlUi2fdTw-4" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;startArrow=none;startFill=0;endArrow=classic;endFill=1;" parent="FGZHOIzdyHBwlUi2fdTw-1" source="FGZHOIzdyHBwlUi2fdTw-5" target="FGZHOIzdyHBwlUi2fdTw-3" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="520" y="240" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="FGZHOIzdyHBwlUi2fdTw-16" value="Instantiate" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="FGZHOIzdyHBwlUi2fdTw-4" vertex="1" connectable="0">
+                    <mxGeometry x="-0.3625" relative="1" as="geometry">
+                        <mxPoint x="-1" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="FGZHOIzdyHBwlUi2fdTw-3" value="vmanify.py(abstract class)" style="rounded=0;whiteSpace=wrap;html=1;" parent="FGZHOIzdyHBwlUi2fdTw-1" vertex="1">
+                    <mxGeometry x="400" y="400" width="240" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="FGZHOIzdyHBwlUi2fdTw-5" value="app.py(main)" style="rounded=1;whiteSpace=wrap;html=1;" parent="FGZHOIzdyHBwlUi2fdTw-1" vertex="1">
+                    <mxGeometry x="410" y="120" width="220" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="FGZHOIzdyHBwlUi2fdTw-6" value="vmagnify_picture.py(class)" style="rounded=0;whiteSpace=wrap;html=1;" parent="FGZHOIzdyHBwlUi2fdTw-1" vertex="1">
+                    <mxGeometry x="120" y="600" width="240" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="FGZHOIzdyHBwlUi2fdTw-9" value="" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="FGZHOIzdyHBwlUi2fdTw-1" source="FGZHOIzdyHBwlUi2fdTw-3" target="FGZHOIzdyHBwlUi2fdTw-6" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="360" y="540" as="sourcePoint"/>
+                        <mxPoint x="510" y="420" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="240" y="460"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="FGZHOIzdyHBwlUi2fdTw-10" value="parent" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=bottom;" parent="FGZHOIzdyHBwlUi2fdTw-9" connectable="0" vertex="1">
+                    <mxGeometry x="-1" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="FGZHOIzdyHBwlUi2fdTw-11" value="child" style="edgeLabel;resizable=0;html=1;align=right;verticalAlign=bottom;" parent="FGZHOIzdyHBwlUi2fdTw-9" connectable="0" vertex="1">
+                    <mxGeometry x="1" relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

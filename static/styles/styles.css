@@ -1,0 +1,49 @@
+#picture_url {
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+#picture_logo {
+  margin-top: 2.5rem;
+  width: 17.5rem;
+  height: 7.5rem;
+  filter: drop-shadow(0 0 15px #711DB0);
+  margin-bottom: 2.5rem;
+  border: none;
+  border-radius: 10px;
+}
+
+body {
+  /* margin-left: 10rem; */
+  text-align: center;
+  min-height: 100dvh;
+  max-width: 100dvw;
+  background: rgb(241, 255, 0);
+  background: linear-gradient(
+    135deg,
+    rgba(241, 255, 0, 0.18820028011204482) 0%,
+    rgba(255, 0, 0, 0.272233893557423) 100%
+  );
+}
+
+#submit_url {
+  margin-bottom: 2.5rem;
+}
+
+#picture_zoom {
+  width: 265px;
+  margin: 2.75rem auto;
+}
+
+#displayed_picture {
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+  border: 2px solid black;
+  filter: drop-shadow(5px 5px 5px rgb(83, 61, 61));
+}
+
+#picture_infos {
+  text-align: center;
+  margin-top: 0.75rem;
+  margin-bottom: 2.5rem;
+}
