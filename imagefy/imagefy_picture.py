@@ -65,7 +65,7 @@ class IMagefyPicture(IMagefy):
     def __get_shape(self, index: int):
         """ return a string with shape data """
         picture_data = self.pictures[index]
-        return "height : " + str(picture_data.height) + " px X width : " + str(picture_data.width) + " px"
+        return "Height : " + str(picture_data.height) + " px X Width : " + str(picture_data.width) + " px"
 
     def __get_url(self, url: str):
         """ do a GET request on the URL """

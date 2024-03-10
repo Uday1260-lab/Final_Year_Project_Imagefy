@@ -2,6 +2,7 @@
 app.py : main file of our application.
 """
 import base64
+from datetime import datetime
 from dash import Dash, html, dcc, Input, Output, State, callback_context
 import dash_daq as daq
 import dash_bootstrap_components as dbc
@@ -40,9 +41,43 @@ app.layout = html.Div(
                 dbc.Col(
                     [
                         dbc.Row(
+                            html.Div([
+                                dcc.Upload(
+                                    id='upload_image',
+                                    children=html.Div([
+                                    'Drag and Drop or ',
+                                    html.A('Select Files')
+                                    ]),
+                                style={
+                                    'width': '50%',
+                                    'height': '60px',
+                                    'lineHeight': '60px',
+                                    'borderWidth': '2px',
+                                    'borderStyle': 'dashed',
+                                    'borderRadius': '5px',
+                                    'textAlign': 'center',
+                                    'marginTop': '10px',
+                                    'marginBottom': '10px',
+                                    'marginRight': 'auto',
+                                    'marginLeft': 'auto',
+                                    'backgroundColor': 'white'
+                                },
+                                multiple=False),
+                                html.Div(id='output_image_upload'),
+                            ])
+                        ),
+                        dbc.Row(
+                            html.Div(
+                                html.Button(
+                                    "Submit Image",
+                                    id="submit_image"
+                                )
+                            )
+                        ),
+                        dbc.Row(
                             html.Div(
                                 html.Label(
-                                    "URL"
+                                    "Or Enter Image URL"
                                 )
                             )
                         ),
@@ -83,6 +118,7 @@ app.layout = html.Div(
                                         "label": "UPSCALE"
                                     },
                                     step=1,
+                                    color="red",
                                     labelPosition='bottom',
                                     marks={
                                         '1': '1x',
@@ -130,6 +166,27 @@ app.layout = html.Div(
 )
 
 
+    
+def parse_contents(contents, filename, date):
+    return html.Div([
+        html.Div('Raw Content:'),
+        html.H5(filename),
+        html.Img(id="uploaded_picture",src=contents)
+    ])
+
+@app.callback(
+    Output('output_image_upload', 'children'),
+    Input('upload_image', 'contents'),
+    State('upload_image', 'filename'),
+    State('upload_image', 'last_modified')
+)
+
+def update_output(list_of_contents, list_of_names, list_of_dates):
+    if list_of_contents is not None:
+        children = [
+            parse_contents(list_of_contents, list_of_names, list_of_dates)]
+        return children
+
 @app.callback(
     Output(component_id='displayed_picture', component_property='src'),
     Output(component_id='picture_infos', component_property='value'),
@@ -152,7 +209,6 @@ def process(_, picture_url, picture_zoom):
         return imagefy.process_url(picture_url)
     elif triggered_item == "picture_zoom":
         return imagefy.get_picture_data(picture_zoom-1)
-
 
 if __name__ == "__main__":
     app.run_server()

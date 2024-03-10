@@ -1,14 +1,15 @@
 #picture_url {
-  margin-bottom: 0.5rem;
-  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  margin-top: 1rem;
   text-align: center;
 }
 #picture_logo {
-  margin-top: 2.5rem;
+  margin-top: 2rem;
   width: 17.5rem;
   height: 7.5rem;
-  filter: drop-shadow(0 0 15px #711DB0);
-  margin-bottom: 2.5rem;
+  filter: drop-shadow(0 0 15px #711db0);
+  margin-bottom: 2rem;
   border: none;
   border-radius: 10px;
 }
@@ -16,23 +17,63 @@
 body {
   /* margin-left: 10rem; */
   text-align: center;
-  min-height: 100dvh;
-  max-width: 100dvw;
-  background: rgb(241, 255, 0);
-  background: linear-gradient(
-    135deg,
-    rgba(241, 255, 0, 0.18820028011204482) 0%,
-    rgba(255, 0, 0, 0.272233893557423) 100%
-  );
+  min-height: 100vh;
+  max-width: 100vw;
+  font-size: 1rem;
+  background-image: linear-gradient(
+      45deg,
+      rgba(254, 246, 210, 0.53) 0%,
+      rgba(254, 246, 210, 0.53) 14.286%,
+      rgba(221, 240, 216, 0.53) 14.286%,
+      rgba(221, 240, 216, 0.53) 28.572%,
+      rgba(188, 233, 223, 0.53) 28.572%,
+      rgba(188, 233, 223, 0.53) 42.858%,
+      rgba(156, 227, 229, 0.53) 42.858%,
+      rgba(156, 227, 229, 0.53) 57.144%,
+      rgba(123, 220, 235, 0.53) 57.144%,
+      rgba(123, 220, 235, 0.53) 71.42999999999999%,
+      rgba(90, 214, 242, 0.53) 71.43%,
+      rgba(90, 214, 242, 0.53) 85.71600000000001%,
+      rgba(57, 207, 248, 0.53) 85.716%,
+      rgba(57, 207, 248, 0.53) 100.002%
+    ),
+    linear-gradient(
+      135deg,
+      rgb(246, 99, 200) 0%,
+      rgb(246, 99, 200) 12.5%,
+      rgb(223, 98, 196) 12.5%,
+      rgb(223, 98, 196) 25%,
+      rgb(199, 97, 192) 25%,
+      rgb(199, 97, 192) 37.5%,
+      rgb(176, 96, 188) 37.5%,
+      rgb(176, 96, 188) 50%,
+      rgb(152, 95, 184) 50%,
+      rgb(152, 95, 184) 62.5%,
+      rgb(129, 94, 180) 62.5%,
+      rgb(129, 94, 180) 75%,
+      rgb(105, 93, 176) 75%,
+      rgb(105, 93, 176) 87.5%,
+      rgb(82, 92, 172) 87.5%,
+      rgb(82, 92, 172) 100%
+    );
+}
+
+label {
+  padding: 1rem;
+  font-size: 1.25rem;
 }
 
 #submit_url {
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.25rem;
+}
+#submit_image {
+  margin-bottom: 1.25rem;
 }
 
 #picture_zoom {
   width: 265px;
   margin: 2.75rem auto;
+  color: black;
 }
 
 #displayed_picture {
@@ -42,8 +83,20 @@ body {
   filter: drop-shadow(5px 5px 5px rgb(83, 61, 61));
 }
 
+#upload_image {
+  font-size: 1rem;
+}
+
+#uploaded_picture {
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+  border: 2px solid black;
+  filter: drop-shadow(5px 5px 5px rgb(83, 61, 61));
+}
+
 #picture_infos {
   text-align: center;
+  font-size: 1rem;
   margin-top: 0.75rem;
   margin-bottom: 2.5rem;
 }
