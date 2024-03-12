@@ -2,8 +2,12 @@
 app.py : main file of our application.
 """
 import base64
+import io
+import os
+import cgi
 from datetime import datetime
 from dash import Dash, html, dcc, Input, Output, State, callback_context
+from dash.dependencies import Input, Output
 import dash_daq as daq
 import dash_bootstrap_components as dbc
 from imagefy.imagefy_picture import IMagefyPicture
@@ -11,6 +15,7 @@ from imagefy.imagefy_picture import IMagefyPicture
 # app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app = Dash(__name__, external_stylesheets=['static/styles/styles.css'])
 LOGO_FILENAME = "static/img/logo/IMagefy50.png"
+SAVE_IMAGE_DIRECTORY = "static/img/downloads"
 
 # Test 1 Butterfly 
 DEFAULT_URL = "https://raw.githubusercontent.com/Saafke/EDSR_Tensorflow/master/images/input.png"
@@ -99,6 +104,14 @@ app.layout = html.Div(
                                 )
                             )
                         ),
+                        # dbc.Row(
+                        #     html.Details([
+                        #         html.Summary('Parameters Tab(Click To Show!!!)'),
+                        #             html.Div([
+                        #                 html.Table(id='Tab-keeper',),
+                        #             ])
+                        #     ])
+                        # ),
                         dbc.Row(
                             html.Div(
                                 html.Label(
@@ -191,24 +204,55 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
     Output(component_id='displayed_picture', component_property='src'),
     Output(component_id='picture_infos', component_property='value'),
     Input(component_id='submit_url', component_property='n_clicks'),
+    Input(component_id='submit_image', component_property='n_clicks'),
     State(component_id='picture_url', component_property='value'),
-    Input(component_id='picture_zoom', component_property='value')
+    Input(component_id='picture_zoom', component_property='value'),
+    State('upload_image', 'filename'),
+    Input('upload_image', 'contents')
 )
-def process(_, picture_url, picture_zoom):
+def process(submit_url, submit_image, picture_url, picture_zoom, upload_image_filename, upload_image):
     """ process the inputs, because we use the same outputs, we have to use a shared callback """
+    
     ctx = callback_context
+
     # ctx variable permits to know which input triggered
     if not ctx.triggered:
-        # this condition triggers on start
+        # this condition triggers on start        
         imagefy.process_url(picture_url)
-        return imagefy.get_picture_data(picture_zoom-1)
+        return imagefy.get_picture_data(picture_zoom-1)    
     else:
         triggered_item = ctx.triggered[0]['prop_id'].split('.')[0]
 
+    # triggered_item = ctx.triggered[0]['prop_id'].split('.')[0]
+    
     if triggered_item == "submit_url":
         return imagefy.process_url(picture_url)
+    
+    elif triggered_item == "submit_image":
+
+        if upload_image is not None:
+            current_datetime = datetime.now()
+            data = upload_image.encode("utf8").split(b";base64,")[1]
+            print(data)
+            with open(os.path.join(SAVE_IMAGE_DIRECTORY, upload_image_filename), "wb") as fp:
+                fp.write(base64.decodebytes(data))
+            _, file_extension = os.path.splitext(os.path.join(SAVE_IMAGE_DIRECTORY, upload_image_filename))
+            new_file_name = current_datetime.strftime("%Y_%m_%d_%H_%M_%S") + file_extension
+            os.rename(os.path.join(SAVE_IMAGE_DIRECTORY, upload_image_filename), os.path.join(SAVE_IMAGE_DIRECTORY, new_file_name))
+
+        return imagefy.process_saved_image(os.path.join(SAVE_IMAGE_DIRECTORY, new_file_name))
+    
     elif triggered_item == "picture_zoom":
         return imagefy.get_picture_data(picture_zoom-1)
+
+def get_file_extension(content_type):
+    _, content_type_info = cgi.parse_header(content_type)
+    return content_type_info.get('name').split('.')[-1]
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 if __name__ == "__main__":
     app.run_server()

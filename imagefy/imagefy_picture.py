@@ -135,6 +135,9 @@ class IMagefyPicture(IMagefy):
         return picture_data.path, self.__get_shape(index)
 
     def process_url(self, url: str):
+        self.pictures = []
+        for _ in range(4):
+            self.pictures.append(PictureData("", 0, 0))
         """ process the URL """
         response, file_extension = self.__get_url(url)
         if response.status_code == 200:
@@ -150,3 +153,12 @@ class IMagefyPicture(IMagefy):
                 return "", "error picture is invalid !"
         else:
             return "", "error "+str(response.status_code)
+        
+    def process_saved_image(self, saved_file_path):
+        self.pictures = []
+        for _ in range(4):
+            self.pictures.append(PictureData("", 0, 0))
+        res = self.__validate_file(saved_file_path)
+        if res:
+            self.__generate_pictures()
+        return self.get_picture_data(self.current_index)
