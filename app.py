@@ -104,75 +104,75 @@ app.layout = html.Div(
                                 )
                             )
                         ),
-                        # dbc.Row(
-                        #     html.Details([
-                        #         html.Summary('Parameters Tab(Click To Show!!!)'),
-                        #             html.Div([
-                        #                 html.Table(id='Tab-keeper',),
-                        #             ])
-                        #     ])
-                        # ),
                         dbc.Row(
-                            html.Div(
-                                html.Label(
-                                    "Picture Zoom Slider"
-                                )
-                            )
+                            html.Details([
+                                html.Summary('Image Size Modify(Click To Show!!!)'),
+                                html.Div([
+                                    dbc.Row([
+                                        dbc.Col([
+                                            dbc.Row(
+                                                html.Label(
+                                                    "Picture Zoom Slider"
+                                                )
+                                            ),
+                                            dbc.Row(
+                                                html.Div(
+                                                    daq.Slider(
+                                                        id="picture_zoom",
+                                                        min=1,
+                                                        max=4,
+                                                        value=1,
+                                                        handleLabel={
+                                                            "showCurrentValue": True,
+                                                            "label": "UPSCALE"
+                                                        },
+                                                        step=1,
+                                                        color="red",
+                                                        labelPosition='bottom',
+                                                        marks={
+                                                            '1': '1x',
+                                                            '2': '2x',
+                                                            '3': '3x',
+                                                            '4': '4x'
+                                                        }
+                                                    )
+                                                )
+                                            ),                                 
+                                        ]),
+                                        
+                                        dbc.Col([
+                                            dbc.Row(
+                                                html.Div(
+                                                    html.Img(
+                                                        id="displayed_picture",
+                                                        src=DEFAULT_FILENAME
+                                                    )
+                                                )
+                                            ),
+                                            dbc.Row(
+                                                html.Div(
+                                                    html.Label(
+                                                        "Picture Resolution"
+                                                    )
+                                                )
+                                            ),
+                                            dbc.Row(
+                                                html.Div(
+                                                    dcc.Input(
+                                                        id="picture_infos",
+                                                        type="text",
+                                                        size="100",
+                                                        readOnly=True
+                                                    )
+                                                )
+                                            )
+                                        ])
+                                    ]),
+                                ]),                                
+                            ], id="image_size_enhancer")
                         ),
-                        dbc.Row(
-                            html.Div(
-                                daq.Slider(
-                                    id="picture_zoom",
-                                    min=1,
-                                    max=4,
-                                    value=1,
-                                    handleLabel={
-                                        "showCurrentValue": True,
-                                        "label": "UPSCALE"
-                                    },
-                                    step=1,
-                                    color="red",
-                                    labelPosition='bottom',
-                                    marks={
-                                        '1': '1x',
-                                        '2': '2x',
-                                        '3': '3x',
-                                        '4': '4x'
-                                    }
-                                )
-                            )
-                        )
                     ]
                 ),
-                dbc.Col(
-                    [
-                        dbc.Row(
-                            html.Div(
-                                html.Img(
-                                    id="displayed_picture",
-                                    src=DEFAULT_FILENAME
-                                )
-                            )
-                        ),
-                        dbc.Row(
-                            html.Div(
-                                html.Label(
-                                    "Picture Resolution"
-                                )
-                            )
-                        ),
-                        dbc.Row(
-                            html.Div(
-                                dcc.Input(
-                                    id="picture_infos",
-                                    type="text",
-                                    size="100",
-                                    readOnly=True
-                                )
-                            )
-                        )
-                    ]
-                )
             ]
         )
     ]
