@@ -106,7 +106,7 @@ app.layout = html.Div(
                         ),
                         dbc.Row(
                             html.Details([
-                                html.Summary('Image Size Modify(Click To Show!!!)'),
+                                html.Summary('Image Size Modify(Click To View!!!)'),
                                 html.Div([
                                     dbc.Row([
                                         dbc.Col([
@@ -161,7 +161,7 @@ app.layout = html.Div(
                                                     dcc.Input(
                                                         id="picture_infos",
                                                         type="text",
-                                                        size="100",
+                                                        size="50",
                                                         readOnly=True
                                                     )
                                                 )
@@ -170,6 +170,33 @@ app.layout = html.Div(
                                     ]),
                                 ]),                                
                             ], id="image_size_enhancer")
+                        ),
+                        dbc.Row(
+                            html.Details([
+                                html.Summary('Enhanced Low Light Image(Click To View!!!)'),
+                                html.Div([
+                                    dbc.Row([                                        
+                                        dbc.Col([
+                                            dbc.Row(
+                                                html.Div(
+                                                    html.Img(
+                                                        id="displayed_low_light_enhanced_picture",
+                                                        src=DEFAULT_FILENAME
+                                                    )
+                                                )
+                                            ),
+                                            dbc.Row(
+                                                html.Div(
+                                                    html.Button(
+                                                        "Reload Image",
+                                                        id="reload_image"
+                                                    )
+                                                )
+                                            ),
+                                        ])
+                                    ]),
+                                ]),                                
+                            ], id="low_light_image_enhancer")
                         ),
                     ]
                 ),
@@ -202,15 +229,17 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
 
 @app.callback(
     Output(component_id='displayed_picture', component_property='src'),
+    Output(component_id="displayed_low_light_enhanced_picture", component_property='src'),
     Output(component_id='picture_infos', component_property='value'),
     Input(component_id='submit_url', component_property='n_clicks'),
     Input(component_id='submit_image', component_property='n_clicks'),
+    Input(component_id='reload_image', component_property='n_clicks'),
     State(component_id='picture_url', component_property='value'),
     Input(component_id='picture_zoom', component_property='value'),
     State('upload_image', 'filename'),
     Input('upload_image', 'contents')
 )
-def process(submit_url, submit_image, picture_url, picture_zoom, upload_image_filename, upload_image):
+def process(submit_url, submit_image, reload_image, picture_url, picture_zoom, upload_image_filename, upload_image):
     """ process the inputs, because we use the same outputs, we have to use a shared callback """
     
     ctx = callback_context
@@ -243,6 +272,9 @@ def process(submit_url, submit_image, picture_url, picture_zoom, upload_image_fi
         return imagefy.process_saved_image(os.path.join(SAVE_IMAGE_DIRECTORY, new_file_name))
     
     elif triggered_item == "picture_zoom":
+        return imagefy.get_picture_data(picture_zoom-1)
+    
+    elif triggered_item == "reload-image":
         return imagefy.get_picture_data(picture_zoom-1)
 
 def get_file_extension(content_type):

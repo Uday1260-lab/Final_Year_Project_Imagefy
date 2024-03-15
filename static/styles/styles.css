@@ -69,6 +69,9 @@ label {
 #submit_image {
   margin-bottom: 1.25rem;
 }
+#reload_image {
+  margin-bottom: 1.25rem;
+}
 
 #picture_zoom {
   width: 265px;
@@ -77,6 +80,13 @@ label {
 }
 
 #displayed_picture {
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+  border: 2px solid black;
+  filter: drop-shadow(5px 5px 5px rgb(83, 61, 61));
+}
+
+#displayed_low_light_enhanced_picture {
   margin-top: 0.5rem;
   margin-bottom: 0.75rem;
   border: 2px solid black;
@@ -104,11 +114,27 @@ label {
 #image_size_enhancer {
   font-size: 1.25rem;
   margin-left: auto;
+  min-height: 2.5rem;
   margin-right: auto;
   background-color: aliceblue;
-  width: 80vw;
+  width: 60vw;
   border-radius: 1rem;
   filter: drop-shadow(5px 5px 5px rgb(83, 61, 61));
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  margin-top: 0.5rem;
+  cursor: pointer;
+}
+
+#low_light_image_enhancer {
+  font-size: 1.25rem;
+  margin-left: auto;
+  margin-right: auto;
+  min-height: 2.5rem;
+  background-color: aliceblue;
+  width: 60vw;
+  cursor: pointer;
+  border-radius: 1rem;
+  filter: drop-shadow(5px 5px 5px rgb(83, 61, 61));
+  margin-bottom: 1.5rem;
   margin-top: 0.5rem;
 }

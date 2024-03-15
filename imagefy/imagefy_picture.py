@@ -10,6 +10,19 @@ import cv2
 from cv2 import dnn_superres
 import requests
 from imagefy.imagefy import IMagefy
+import tensorflow as tf
+import numpy as np
+import transformers
+import tensorflow as tf
+from tensorflow import image
+from glob import glob
+from tensorflow import keras
+import keras
+from keras import layers
+from keras.models import load_model
+from PIL import Image
+import numpy as np
+from huggingface_hub import from_pretrained_keras
 
 
 class PictureData:
@@ -33,8 +46,8 @@ class IMagefyPicture(IMagefy):
         self.current_index = 0
         self.original_picture = None
         self.pictures: List[PictureData] = list()
-        # Initialize the list of 4 pictures(original + 3 zoomed)
-        for _ in range(4):
+        # Initialize the list of 5 pictures(original + 3 zoomed + 1 low-light-enhanced)
+        for _ in range(5):
             self.pictures.append(PictureData("", 0, 0))
 
     def __download_url_content(self, response: requests.Response, file_extension: str):
@@ -55,12 +68,95 @@ class IMagefyPicture(IMagefy):
             self.EDSR_MODEL_X3_PATH, mutex, 2))
         x4_picture_thread = threading.Thread(target=self.__process_picture, args=(
             self.EDSR_MODEL_X4_PATH, mutex, 3))
+        low_light_picture_thread = threading.Thread(target=self.__process_low_light_picture, args=(
+            mutex, 4))
         x2_picture_thread.start()
         x3_picture_thread.start()
         x4_picture_thread.start()
+        low_light_picture_thread.start()
         x2_picture_thread.join()
         x3_picture_thread.join()
         x4_picture_thread.join()
+        low_light_picture_thread.join()
+        
+    # def post_process(self, image, output):
+    #     # from zero_dce post process
+    #     r1 = output[:, :, :, :3]
+    #     r2 = output[:, :, :, 3:6]
+    #     r3 = output[:, :, :, 6:9]
+    #     r4 = output[:, :, :, 9:12]
+    #     r5 = output[:, :, :, 12:15]
+    #     r6 = output[:, :, :, 15:18]
+    #     r7 = output[:, :, :, 18:21]
+    #     r8 = output[:, :, :, 21:24]
+    #     x = image + r1 * (tf.square(image) - image)
+    #     x = x + r2 * (tf.square(x) - x)
+    #     enhanced_img = x + r4 * (tf.square(x) - x)
+    #     x = enhanced_img + r5 * (tf.square(enhanced_img) - enhanced_img)
+    #     x = x + r6 * (tf.square(x) - x)
+    #     x = x + r7 * (tf.square(x) - x)
+    #     enhanced_img = x + r8 * (tf.square(x) - x)
+    #     return enhanced_img
+
+
+    def __process_low_light_picture(self, mutex: Lock,  index: int):
+        """ thread which generates a picture by calling the model """        
+        
+        # model = from_pretrained_keras("keras-io/low-light-image-enhancement", compile=False)
+        path = "C:\\Users\\Uday Prasad\\.cache\\huggingface\\hub\\models--keras-io--low-light-image-enhancement\\snapshots\\b15aa894233ca043793c2e110490fef138f02497"
+        model = keras.layers.TFSMLayer(path, call_endpoint='serving_default')
+        
+        mutex.acquire()
+        file_path = self.pictures[0].path
+        mutex.release()
+        file_name = os.path.basename(file_path)
+        file_name, _ = os.path.splitext(file_name)
+        orig = Image.open(file_path)
+        
+        image = keras.preprocessing.image.img_to_array(orig)
+        print(image)
+        image = image.astype("float32") / 255.0 
+        print(image)
+        image = np.expand_dims(image, axis=0) # create batch of 1 image
+        temp = image
+        print(image)
+        output_image = model(image) # run the image through model
+        print(output_image['conv2d_20'].numpy())
+        output_image = output_image['conv2d_20'].numpy()
+        
+        # from zero_dce post process
+        r1 = output_image[:, :, :, 0:3]
+        r2 = output_image[:, :, :, 3:6]
+        r3 = output_image[:, :, :, 6:9]
+        r4 = output_image[:, :, :, 9:12]
+        r5 = output_image[:, :, :, 12:15]
+        r6 = output_image[:, :, :, 15:18]
+        r7 = output_image[:, :, :, 18:21]
+        r8 = output_image[:, :, :, 21:24]
+        x = temp + r1 * (tf.square(temp) - temp)
+        x = x + r2 * (tf.square(x) - x)
+        enhanced_img = x + r4 * (tf.square(x) - x)
+        x = enhanced_img + r5 * (tf.square(enhanced_img) - enhanced_img)
+        x = x + r6 * (tf.square(x) - x)
+        x = x + r7 * (tf.square(x) - x)
+        enhanced_img = x + r8 * (tf.square(x) - x)
+        
+        output_image = enhanced_img # will implement this later
+        output_image = tf.cast((output_image[0, :, :, :] * 255), dtype=np.uint8) # processing for PIL.Image
+        output_image = output_image.numpy()
+        print("output image")
+        print(output_image)
+        # output_image = Image.fromarray(output_image.numpy())
+        
+        height, width, _= output_image.shape
+        print(height, width)
+        new_file_path = self.GENERATED_FOLDER + \
+            file_name+"_low_light_enhanced"+".png"
+        cv2.imwrite(new_file_path, output_image)
+        mutex.acquire()
+        self.pictures[index] = PictureData(new_file_path, height, width)
+        print(new_file_path + "saved!")
+        mutex.release()
 
     def __get_shape(self, index: int):
         """ return a string with shape data """
@@ -101,10 +197,11 @@ class IMagefyPicture(IMagefy):
         height, width, _ = generated_picture.shape
         # Save the picture
         new_file_path = self.GENERATED_FOLDER + \
-            file_name+"_x"+str(model_scale)+".jpg"
+            file_name+"_x"+str(model_scale)+".png"
         cv2.imwrite(new_file_path, generated_picture)
         mutex.acquire()
-        self.pictures[index] = PictureData(new_file_path, height, width)
+        self.pictures[index] = PictureData(new_file_path, height, width)        
+        print(new_file_path + "saved!")
         mutex.release()
 
     def __validate_file(self, path: str):
@@ -132,11 +229,12 @@ class IMagefyPicture(IMagefy):
         # update the current index with new index from slider
         self.current_index = index
         picture_data = self.pictures[index]
-        return picture_data.path, self.__get_shape(index)
+        low_light_picture_data = self.pictures[4]
+        return picture_data.path, low_light_picture_data.path,self.__get_shape(index)
 
     def process_url(self, url: str):
         self.pictures = []
-        for _ in range(4):
+        for _ in range(5):
             self.pictures.append(PictureData("", 0, 0))
         """ process the URL """
         response, file_extension = self.__get_url(url)
@@ -156,7 +254,7 @@ class IMagefyPicture(IMagefy):
         
     def process_saved_image(self, saved_file_path):
         self.pictures = []
-        for _ in range(4):
+        for _ in range(5):
             self.pictures.append(PictureData("", 0, 0))
         res = self.__validate_file(saved_file_path)
         if res:
