@@ -23,6 +23,7 @@ from keras.models import load_model
 from PIL import Image
 import numpy as np
 from huggingface_hub import from_pretrained_keras
+import torch
 
 
 class PictureData:
@@ -106,6 +107,13 @@ class IMagefyPicture(IMagefy):
         path = "C:\\Users\\Uday Prasad\\.cache\\huggingface\\hub\\models--keras-io--low-light-image-enhancement\\snapshots\\b15aa894233ca043793c2e110490fef138f02497"
         model = keras.layers.TFSMLayer(path, call_endpoint='serving_default')
         
+        
+        load_mat = cv2.imread("static/img/misc/loading.png")
+        load_height, load_width, load_colors = load_mat.shape
+        mutex.acquire()
+        self.pictures[index] = PictureData("static/img/misc/loading.png", load_height, load_width)
+        mutex.release()
+        
         mutex.acquire()
         file_path = self.pictures[0].path
         mutex.release()
@@ -114,14 +122,10 @@ class IMagefyPicture(IMagefy):
         orig = Image.open(file_path)
         
         image = keras.preprocessing.image.img_to_array(orig)
-        print(image)
         image = image.astype("float32") / 255.0 
-        print(image)
         image = np.expand_dims(image, axis=0) # create batch of 1 image
         temp = image
-        print(image)
         output_image = model(image) # run the image through model
-        print(output_image['conv2d_20'].numpy())
         output_image = output_image['conv2d_20'].numpy()
         
         # from zero_dce post process
@@ -145,7 +149,6 @@ class IMagefyPicture(IMagefy):
         output_image = tf.cast((output_image[0, :, :, :] * 255), dtype=np.uint8) # processing for PIL.Image
         output_image = output_image.numpy()
         print("output image")
-        print(output_image)
         # output_image = Image.fromarray(output_image.numpy())
         
         height, width, _= output_image.shape
@@ -170,39 +173,54 @@ class IMagefyPicture(IMagefy):
         return response, file_extension
 
     def __process_picture(self, model_path: str, mutex: Lock, index: int):
-        """ thread which generates a picture by calling the model """
-        # Create an SR object
-        super_res = dnn_superres.DnnSuperResImpl_create()
-        # Get the model name
-        model_type = model_path.split("/")[2].lower()
-        base_name = os.path.basename(model_path)
-        model_name, _ = os.path.splitext(base_name)
-        # Get the model scale
-        model_scale = int(model_name.split("x")[1])
-        # The mutex permits to access with safe our list of pictures
-        mutex.acquire()
-        file_path = self.pictures[0].path
-        mutex.release()
-        file_name = os.path.basename(file_path)
-        file_name, _ = os.path.splitext(file_name)
-        # Read the desired model
-        super_res.readModel(model_path)
-        # Set CUDA backend and target to enable GPU inference, one day !
-        # super_res.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
-        # super_res.setPreferableTarget(cv2.dnn.DNN_BACKEND_CUDA)
-        # Configure the model
-        super_res.setModel(model_type, model_scale)
-        # Process the picture
-        generated_picture = super_res.upsample(self.original_picture)
-        height, width, _ = generated_picture.shape
-        # Save the picture
-        new_file_path = self.GENERATED_FOLDER + \
-            file_name+"_x"+str(model_scale)+".png"
-        cv2.imwrite(new_file_path, generated_picture)
-        mutex.acquire()
-        self.pictures[index] = PictureData(new_file_path, height, width)        
-        print(new_file_path + "saved!")
-        mutex.release()
+        
+        """ thread which generates a picture by calling the model """        
+        if self.pictures[0].height >= 400 and self.pictures[0].width >= 400:
+            load_mat = cv2.imread("static/img/misc/BIG_IMG.png")
+            load_height, load_width, load_colors = load_mat.shape
+            mutex.acquire()
+            self.pictures[index] = PictureData("static/img/misc/BIG_IMG.png", load_height, load_width)
+            mutex.release()
+        
+        else:
+            load_mat = cv2.imread("static/img/misc/loading.png")
+            load_height, load_width, load_colors = load_mat.shape
+            mutex.acquire()
+            self.pictures[index] = PictureData("static/img/misc/loading.png", load_height, load_width)
+            mutex.release()
+                
+            # Create an SR object
+            super_res = dnn_superres.DnnSuperResImpl_create()
+            # Get the model name
+            model_type = model_path.split("/")[2].lower()
+            base_name = os.path.basename(model_path)
+            model_name, _ = os.path.splitext(base_name)
+            # Get the model scale
+            model_scale = int(model_name.split("x")[1])
+            # The mutex permits to access with safe our list of pictures
+            mutex.acquire()
+            file_path = self.pictures[0].path
+            mutex.release()
+            file_name = os.path.basename(file_path)
+            file_name, _ = os.path.splitext(file_name)
+            # Read the desired model
+            super_res.readModel(model_path)
+            # Set CUDA backend and target to enable GPU inference, one day !
+            super_res.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+            super_res.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
+            # Configure the model
+            super_res.setModel(model_type, model_scale)
+            # Process the picture
+            generated_picture = super_res.upsample(self.original_picture)
+            height, width, _ = generated_picture.shape
+            # Save the picture
+            new_file_path = self.GENERATED_FOLDER + \
+                file_name+"_x"+str(model_scale)+".png"
+            cv2.imwrite(new_file_path, generated_picture)
+            mutex.acquire()
+            self.pictures[index] = PictureData(new_file_path, height, width)        
+            print(new_file_path + "saved!")
+            mutex.release()
 
     def __validate_file(self, path: str):
         """ validate if the file in input is a picture """

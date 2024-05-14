@@ -262,7 +262,6 @@ def process(submit_url, submit_image, reload_image, picture_url, picture_zoom, u
         if upload_image is not None:
             current_datetime = datetime.now()
             data = upload_image.encode("utf8").split(b";base64,")[1]
-            print(data)
             with open(os.path.join(SAVE_IMAGE_DIRECTORY, upload_image_filename), "wb") as fp:
                 fp.write(base64.decodebytes(data))
             _, file_extension = os.path.splitext(os.path.join(SAVE_IMAGE_DIRECTORY, upload_image_filename))

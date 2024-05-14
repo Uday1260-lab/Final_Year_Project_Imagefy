@@ -19,6 +19,7 @@ body {
   text-align: center;
   min-height: 100vh;
   max-width: 100vw;
+  font-weight: 600;
   font-size: 1rem;
   background-image: linear-gradient(
       45deg,
@@ -117,7 +118,7 @@ label {
   min-height: 2.5rem;
   margin-right: auto;
   background-color: aliceblue;
-  width: 60vw;
+  width: 80vw;
   border-radius: 1rem;
   filter: drop-shadow(5px 5px 5px rgb(83, 61, 61));
   margin-bottom: 1.5rem;
@@ -131,10 +132,35 @@ label {
   margin-right: auto;
   min-height: 2.5rem;
   background-color: aliceblue;
-  width: 60vw;
+  width: 80vw;
   cursor: pointer;
   border-radius: 1rem;
   filter: drop-shadow(5px 5px 5px rgb(83, 61, 61));
   margin-bottom: 1.5rem;
   margin-top: 0.5rem;
+}
+
+button {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  outline: none;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  background-color: rgb(14, 14, 26);
+  color: rgb(234, 234, 234);
+  font-weight: 700;
+  transition: 0.6s;
+}
+
+button:active {
+  scale: 0.92;
+}
+
+button:hover {
+  background: rgb(2,29,78);
+  background: linear-gradient(270deg, rgba(2, 29, 78, 0.681) 0%, rgba(31, 215, 232, 0.873) 60%);
+  color: rgb(4, 4, 38);
+  box-shadow: 0px 0px 60px #1f4c65;
 }
